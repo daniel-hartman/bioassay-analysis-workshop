@@ -1,0 +1,21 @@
+---
+title: "Bioassay Data Analysis Using R #1 - Overview"
+author: "Dan Hartman"
+date: "2025-03-21"
+output: rmarkdown::github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## General Overview of these meetings
+
+I'll gear these towards folks coming from lab backgrounds with little or no R experience. I'll go over the basics of using R for data analysis, with best practices on readbility and reproducability.
+
+- Exploratory analysis (AKA the Honeymoon Stage).
+- Fit regressions to bioassay data (comparing groups, dose-response curves, etc.)
+- Leverage those regressions to generate quantities/estimates that we can bring back into the lab. This includes LC50's, interpolation from standard curves, expected mortality under specific conditions, inform power analyses and experimental designs)
+- Implement fancier algorithms for datasets with multiple and/or large sources of noise (I'm looking at you, chlorfenapyr).
+- Present the data in Markdown (i.e. how this doc was made), emphasizing automatic report generation.
+- Whatever else you'd like to see.
