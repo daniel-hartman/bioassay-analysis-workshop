@@ -105,6 +105,13 @@ will execute them from top to bottom. At the top of each script, we will
 typically be loading all of the packages that we need using the
 “library” function. So, my scripts usually look something like this:
 
+``` r
+rm(list = ls())  #clear our environment
+library(tidyverse) #manipulate and visualize data
+library(brms)  #fit fancy models
+library(modelr)  #make predictions from the fancy models
+```
+
 In a script, we can enter text after \#, and R will ignore it. this is
 called a ‘comment’. We can use these to add human-readable descriptions
 of what parts of the script do. This is pretty important for sharing
