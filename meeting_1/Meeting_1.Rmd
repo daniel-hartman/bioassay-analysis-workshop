@@ -3,6 +3,7 @@ title: "Getting Started with R"
 author: "Dan Hartman"
 date: "2025-03-21"
 output: rmarkdown::github_document
+output_file: "README.md"
 ---
 
 ```{r setup, include=FALSE}
@@ -64,7 +65,7 @@ We will continue to customize our environment depending on what we plan on worki
 
 The source window is where you write your code. This is where you make most of the edits during analyses. Commands will be written here, and R will execute them from top to bottom. At the top of each script, we will typically be loading all of the packages that we need using the "library" function. So, my scripts usually look something like this:
 
-```{r, echo=FALSE, eval=FALSE}
+```{r, eval=FALSE, echo=TRUE}
 rm(list = ls())  #clear our environment
 library(tidyverse) #manipulate and visualize data
 library(brms)  #fit fancy models
