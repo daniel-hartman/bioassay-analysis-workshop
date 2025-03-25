@@ -170,9 +170,10 @@ setequal(d,e) #determine if we have equal sets
 
     ## [1] TRUE
 
-Remember the rm(list=ls()) command above? That’s a command which uses a
-function within a function. We can see what each of them do by running
-them from the inside, out.
+Remember the rm(list=ls()) command above? “list” is an argument that
+rm() uses to determine what to remove. ls() lists all of the objects in
+the environment, and this is passed to rm() which deletes the output of
+ls(). We can do this in a few steps as well:
 
 ``` r
 ls() #show what's in our environment
@@ -182,7 +183,7 @@ ls() #show what's in our environment
 
 ``` r
 list=ls() #make a list of everything in the environment
-rm(list) #pass that list to the 'delete' functioin
+rm(list=list) #pass that list to the 'delete' function
 ```
 
 Now we have an empty environment. But this was the first thing in our
@@ -198,6 +199,8 @@ Base R has some plotting functions that are useful for quick-and-dirty
 data exploration:
 
 ``` r
+d=c(1:15)
+e=c(1:15)
 plot(d,e)
 ```
 
@@ -247,7 +250,7 @@ We can use a more rigorous command to see if these are identical objects
 identical(d,e)
 ```
 
-    ## [1] FALSE
+    ## [1] TRUE
 
 You might have noticed before in the environment window that d has a
 “num” label and e has “int” label. That means that d is “numeric” while
@@ -272,7 +275,7 @@ as.numeric(e)
 identical(d, as.numeric(e))
 ```
 
-    ## [1] TRUE
+    ## [1] FALSE
 
 One of the most common errors occurs when we pass data to a function in
 a format/structure other than what it is designed for.

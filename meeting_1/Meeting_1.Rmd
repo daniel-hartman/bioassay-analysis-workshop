@@ -3,7 +3,7 @@ title: "Getting Started with R"
 author: "Dan Hartman"
 date: "2025-03-21"
 output: rmarkdown::github_document
-output_file: "README.md"
+output_file: "README"
 ---
 
 ```{r setup, include=FALSE}
@@ -102,11 +102,11 @@ d=c(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15)
 e=c(1:15)
 setequal(d,e) #determine if we have equal sets
 ```
-Remember the rm(list=ls()) command above? That's a command which uses a function within a function. We can see what each of them do by running them from the inside, out.
+Remember the rm(list=ls()) command above? "list" is an argument that rm() uses to determine what to remove. ls() lists all of the objects in the environment, and this is passed to rm() which deletes the output of ls().  We can do this in a few steps as well:
 ```{r, ECHO=TRUE}
 ls() #show what's in our environment
 list=ls() #make a list of everything in the environment
-rm(list) #pass that list to the 'delete' functioin
+rm(list=list) #pass that list to the 'delete' function
 ```
 
 Now we have an empty environment. But this was the first thing in our script... Why are we deleting everything in our environment, before we've done anything? We want to make sure that our whole script works well from top-to-bottom, starting with an empty environment. If we re-ran the script without this line, we would have some junk objects from previous runs in our environment. This is just good practice and bug prevention.
@@ -115,6 +115,8 @@ Now we have an empty environment. But this was the first thing in our script... 
 
 Base R has some plotting functions that are useful for quick-and-dirty data exploration:
 ```{r, echo=TRUE}
+d=c(1:15)
+e=c(1:15)
 plot(d,e)
 ```
 
