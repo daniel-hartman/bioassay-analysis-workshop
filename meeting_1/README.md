@@ -107,9 +107,8 @@ typically be loading all of the packages that we need using the
 
 ``` r
 rm(list = ls())  #clear our environment
-library(tidyverse) #manipulate and visualize data
-library(brms)  #fit fancy models
-library(modelr)  #make predictions from the fancy models
+library() #library here
+library() #another library...
 ```
 
 In a script, we can enter text after \#, and R will ignore it. this is
@@ -199,7 +198,7 @@ Base R has some plotting functions that are useful for quick-and-dirty
 data exploration:
 
 ``` r
-d=c(1:15)
+d=c(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15)
 e=c(1:15)
 plot(d,e)
 ```
@@ -250,7 +249,7 @@ We can use a more rigorous command to see if these are identical objects
 identical(d,e)
 ```
 
-    ## [1] TRUE
+    ## [1] FALSE
 
 You might have noticed before in the environment window that d has a
 “num” label and e has “int” label. That means that d is “numeric” while
@@ -275,7 +274,7 @@ as.numeric(e)
 identical(d, as.numeric(e))
 ```
 
-    ## [1] FALSE
+    ## [1] TRUE
 
 One of the most common errors occurs when we pass data to a function in
 a format/structure other than what it is designed for.
