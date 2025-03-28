@@ -67,9 +67,9 @@ The source window is where you write your code. This is where you make most of t
 
 ```{r, eval=FALSE, echo=TRUE}
 rm(list = ls())  #clear our environment
-library(tidyverse) #manipulate and visualize data
-library(brms)  #fit fancy models
-library(modelr)  #make predictions from the fancy models
+library() #library here
+library() #another library...
+
 ```
 
 In a script, we can enter text after #, and R will ignore it. this is called a 'comment'. We can use these to add human-readable descriptions of what parts of the script do. This is pretty important for sharing scripts with other people, or helping our future selves remember what we were doing when we made them.
@@ -115,7 +115,7 @@ Now we have an empty environment. But this was the first thing in our script... 
 
 Base R has some plotting functions that are useful for quick-and-dirty data exploration:
 ```{r, echo=TRUE}
-d=c(1:15)
+d=c(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15)
 e=c(1:15)
 plot(d,e)
 ```
