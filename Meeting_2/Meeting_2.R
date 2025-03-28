@@ -108,7 +108,7 @@ ggplot(data=data) +
 glm(mort.rate ~ strain, #Formula - analyze number of dead mosquitoes as a function of strain
   weights = total.mosquitoes, #The total number of mosquitoes in each bottle (in case they differed)
   data=data %>% filter(treatment=="treatment"), #specify dataset and remove neg. control bottles
-  family=quasibinomial)
+  family=binomial)
 
 #  If this is all we do, the function gives output for the fitted coefficients and intercept.
 #  Let's create an object, to make some other stuff easier.
@@ -125,12 +125,17 @@ model.fit <- glm(mort.rate ~ strain, #Formula - analyze number of dead mosquitoe
 # and the residual plot.
 plot(model.fit)
 
+# This will give you a summary of your model, and some p-values - these can use
+# different tests by default, depending on the type of model. See ?summary.glm()
+summary(model.fit)
+
+
 #  Great - we have data (points), and then fit a line through those points (our model)
 #  These coefficients and intercept describe that line.
 model.fit
 #  Why do we only have coefficients for two of our strains? The short answer is,
 #  the model uses one factor as "reference" factor, fixing it at 0. Check the signs
-#  Here - the positive coefficient for "tres" means that tres has higher mortality
+#   - the positive coefficient for "tres" means that tres has higher mortality
 #  Than the reference factor (dos, chosen automatically). Coefficient "uno" has a
 #  Negative sign, meaning that it has lower mortality than dos.  We can think of
 #  The intercept as the reference strain here (dos).
