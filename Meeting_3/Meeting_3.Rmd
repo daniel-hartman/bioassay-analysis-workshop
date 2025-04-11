@@ -1,0 +1,141 @@
+---
+title: "Handy Transformations"
+author: "Dan Hartman"
+date: "2025-04-07"
+output: rmarkdown::github_document
+output_file: "README"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, dpi = 300, dev = "svg")
+```
+
+
+## Objectives
+1.  Learn a few handy transformations with R functions
+2.  Do some more advanced plotting with ggplot2
+
+The last example dataset was pretty simple, and we were able to make plots right
+out of the gate. Most folks have also started reading their data into R and doing
+some visualization and analysis. Your data is likely going to be a bit more complex
+going forward, with multiple observation times, multiple insecticides, etc. This
+adds a little complexity to our exploratory analysis. There are many more ways
+we can visualize the data - and that's a good thing.
+
+As we go through some of the exploratory analyses, we have to reshape data, add
+columns calculated from existing columns, filter data, etc. etc. We've done a bit
+of that already. I wanted to give you some recipes for transformations that I use
+a lot with bioassay data.
+
+This usually arises due to the fact that data entry is easiest in a wider spreadsheet,
+while analysis requires a longer spreadsheet. I'll show below why this is the case and
+how we can use some transformation in our R script to automatically do what we
+might usually use a pivot table for. This keeps things easier for us both in the
+lab and in the R window.
+
+## The Workflow
+
+I expanded the data simulation process from our second meeting to add mortality
+at 48 and 72 hour time points - see datasim.R in the meeting folder. These data 
+are formatted to match the typical data collection format - see the CDC or WHO 
+bioassay manuals as a reference.
+
+After reading in the data, we are going to change the structure of the dataset to be more R-friendly. Going forward, this set of functions should work perfectly to get your data into
+a more R friendly format. Just use this example dataset as a template and keep
+the column names.
+
+Finally, we will leverage the new format to make a really nice plot using the ggplot2 package in just a few lines of code. Play around with some of the arguments to see what happens.
+
+## Excercise
+
+So, we did all those bioassays, and we want to make some plots. Let's read in
+the data. Don't forget to put your data in a project folder and set the working
+directory. Go ahead and install ggbeeswarm if you don't already have it.
+
+```{r}
+library(tidyverse)
+library(ggbeeswarm)
+setwd("~/bioassay_analysis_workshop/Meeting_3")
+data.wide <- read_csv("three.strain.three.timepoints.csv")
+head(data.wide)
+```
+
+Looks good - all of the numeric columns are numeric or `dbl`, and the character columns are characters or `chr`.  Great start.
+
+We might be interested in plotting mortality across a a set of time points - but we don't
+have that as a variable yet. As a rule of thumb - the best dataset has one
+observation per row. Here, we have three observations per row (three time points).
+This is going to feel goofy, so let's just do it and then compare the two datasets:
+
+```{r}
+data.long<-pivot_longer(data=data.wide,
+                        cols = c("dead.hr.24", "dead.hr.48", "dead.hr.72"), #the colums we want to stack
+                        names_to = "Time Point", #turn column names into data points
+                        values_to = "dead") #move data points to 'dead' column
+head(data.long)
+```
+
+Now we have `Time Point` as a variable, and our data sheet has one observation per
+row.  This would be a pretty ugly table format to record raw data into, in the
+insectary. Take a good few minutes to examine `data.long` and `data.wide` to see 
+exactly how we transformed the dataset.
+
+Now we can calculate the percent mortality just as before, with `mutate()`. Remember,
+`mutate()` adds columns to our table, which can be calculated from existing columns.
+
+```{r}
+data.long<-mutate(.data=data.long,
+                  mortality = dead / total.mosquitoes) #specify new column and calc from existing ones
+head(data.long)
+```
+
+We have our mortality calculated - great. I don't like how `Time Point` still has
+some characters - lets get rid of that, in a similar way with `mutate()`. This
+time, we will overwrite the existing `Time Point` column. We are using `gsub()`
+to replace `dead.hr.` with... nothing, in order to remove those existing characters.
+
+```{r}
+data.long<-mutate(.data=data.long,
+                  'Time Point' = gsub(pattern='dead.hr.', replace='', x=data.long$'Time Point'))
+head(data.long)
+```
+
+Awesome - it got ride of the words. But see how it is still calling `Time Point` a
+character vector?  See the `<chr>` below the column header. Lets fix that.
+
+```{r}
+data.long$'Time Point'<-as.numeric(data.long$'Time Point')
+head(data.long)
+```
+
+Great!  No we have an R friendly data set. Let's do our due diligence and make sure
+that control mortality is less than 5%, per the <a href="https://www.who.int/publications/i/item/9789240043770">WHO manual</a>. Above
+5%, we need to make some corrections.  Let's see.
+
+```{r}
+data.long %>%
+  filter(treatment=="negative.control", #remove treatment bottles
+         `Time Point`==72) %>% #select only the final time point
+  group_by(strain) %>% #specify the groups we want to separate, if any
+  summarize(mortality = ( (sum(dead)) / sum(total.mosquitoes) ) ) #summarize mortality across all control bottles
+```
+Tres comes close to our threshold for needing a correction (5% mortality) but we can proceed without it.
+
+Let's do some plots! Note that with ggplot, we will plot multiple layers, explained below. Anything we put as an argument within `ggplot()` gets used by all "geoms" (layers) in the plot. We want both layers to have the same x and y axes, and be colored by strain, so I just put that in ggplot(). We will add some tweaks to the layers within those specific lines.
+
+If we plot the raw mortality points, we get a lot of overlapping points, so
+that ends up being misleading. The `geom_beeswarm` package allows for the points to spread a little bit along the x axis, but only if they overlap. The `cex = 4` argument tells the function how much distance we want - play around with this value and see what happens for you.
+
+`geom_violin()` adds another layer with a symmetrical density describing the data; this is a great way to summarize. The `fill=NA` argument keeps the center transparent so that we can see the raw data points from `geom_beeswarm()`. Try to replace that with `fill=strain` and see what happens.
+
+Finally, `fact_grid()` splits up our data across multiple 'facets' (in this case, according to strain). We describe what we want as a formula, very similar to how we specify regressions. In this case `. ~ strain` says to separate everything (`.`) only by `strain`.
+```{r out.width="100%"}
+data.long %>%
+  filter(treatment=="treatment") %>% #filter out the negative control bottles
+ggplot(aes(x=`Time Point`, y=mortality, color=strain, group=`Time Point`)) + #define the axes we want and how we want to group the data
+  geom_beeswarm(cex = 4) +
+  geom_violin(fill=NA) +
+  facet_grid(. ~ strain)
+```
+See how we could not have dones this without `pivot_longer()`? How would we have specified our time points as a variable in `ggplot()`? If we wanted to include these time points as a variable in a regression, it would be the same situation.
+
